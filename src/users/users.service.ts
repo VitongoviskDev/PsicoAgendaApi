@@ -6,15 +6,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 export class UsersService {
     constructor(private usersRepo: UsersRepository) { }
 
+    findById(id: string) {
+        return this.usersRepo.findOne({ where: { id } });
+    }
     getUsers() {
-        return this.usersRepo.findAll();
+        return this.usersRepo.find();
     }
-
     create(data: CreateUserDto) {
-        return this.usersRepo.createUser(data);
+        const user = this.usersRepo.create(data);
+        return this.usersRepo.save(user);
     }
-
     findByEmail(email: string) {
-        return this.usersRepo.findByEmail(email);
+        return this.usersRepo.findOne({ where: { email } });
     }
 }

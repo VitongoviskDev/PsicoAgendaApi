@@ -1,25 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 
 @Injectable()
-export class UsersRepository {
+export class UsersRepository extends Repository<User> {
   constructor(
     @InjectRepository(User)
     private repo: Repository<User>,
-  ) {}
-
-  findAll() {
-    return this.repo.find();
+  ) {
+    super(repo.target, repo.manager, repo.queryRunner)
   }
 
-  findByEmail(email: string) {
-    return this.repo.findOne({ where: { email } });
-  }
-
-  createUser(data: Partial<User>) {
-    const user = this.repo.create(data);
-    return this.repo.save(user);
-  }
 }

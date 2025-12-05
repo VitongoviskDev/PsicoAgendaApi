@@ -1,5 +1,6 @@
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
-import { UserRole } from '../user.entity';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
+import { ClinicUserRole } from '../../clinic-user-role/entities/clinic-user-role.entity';
+import { UserStatus } from '../entities/user.entity';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -8,9 +9,15 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
+  @MinLength(6)
   password: string;
 
-  @IsEnum(UserRole)
-  role: UserRole;
+  // status usado apenas para owners no fluxo A2
+  @IsOptional()
+  @IsEnum(UserStatus)
+  status?: UserStatus;
+
+  // lista de roles (opcional)
+  @IsOptional()
+  clinicRoles?: ClinicUserRole[];
 }
