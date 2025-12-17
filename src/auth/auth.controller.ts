@@ -1,11 +1,10 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ApiResponse } from 'src/responses/ApiResponse';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { CreateUserDto } from '../users/dto/create-user.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import { RegisterOwnerDto } from './dto/register-owner.dto';
-import { ResponseBuilder } from 'src/utils/ResponseBuilder';
-import { ApiResponse } from 'src/responses/ApiResponse';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 export class AuthController {
@@ -22,7 +21,6 @@ export class AuthController {
         return response
     }
 
-
     @Post('login')
     async login(@Body() body: LoginDto) {
         const data = await this.authService.login(body);
@@ -38,5 +36,25 @@ export class AuthController {
     @Get('me')
     getProfile(@Req() req) {
         return req.user;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('complete-registration')
+    @UseInterceptors(FileInterceptor('image'))
+    async completeRegistration(
+        @UploadedFile() image: Express.Multer.File,
+        @Body() body: CompleteRegistrationDto,
+        @Req() req
+    ) {
+        const data = await this.authService.completeRegistration(req.user.sub, {
+            ...body,
+            image
+        });
+
+        return {
+            message: 'Cadastro finalizado com sucesso!',
+            data,
+            status: 200
+        };
     }
 }

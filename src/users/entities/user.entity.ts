@@ -1,11 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { ClinicUserRole } from '../../clinic-user-role/entities/clinic-user-role.entity';
+import { PatientProfile } from "src/patient-profile/entity/patient-profile.entity";
+import { PsychologistProfile } from "src/psychologist-profile/entity/psychologist-profile.entity";
+import { StaffProfile } from "src/staff-profile/entity/staff-profile.entity";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserStatus {
-    PRE_REGISTRATION = 'pre_registration',
-    ACTIVE = 'active',
+    PENDING_REGISTRATION = 'PENDING_REGISTRATION',
+    ACTIVE = 'ACTIVE',
+    DISABLED = 'DISABLED',
+    BLOCKED = 'BLOCKED',
 }
 
+// users/entities/user.entity.ts
 @Entity('users')
 export class User {
     @PrimaryGeneratedColumn('uuid')
@@ -23,20 +28,28 @@ export class User {
     @Column({ nullable: true })
     phone?: string;
 
+    @Column({ nullable: true })
+    birthDate?: Date;
+
     @Column({ nullable: true, unique: true })
     cpf?: string;
 
-    @Column({ nullable: true, unique: true })
-    crp?: string;
-
+    @Column({ type: 'uuid', nullable: true })
+    lastClinicId?: string | null;
 
     @Column({
         type: 'enum',
         enum: UserStatus,
-        default: UserStatus.PRE_REGISTRATION,
+        default: UserStatus.PENDING_REGISTRATION,
     })
     status: UserStatus;
 
-    @OneToMany(() => ClinicUserRole, (cur) => cur.user)
-    clinicRoles: ClinicUserRole[];
+    @OneToOne(() => StaffProfile, profile => profile.user)
+    staffProfile?: StaffProfile;
+
+    @OneToOne(() => PsychologistProfile, p => p.user)
+    psychologistProfile?: PsychologistProfile;
+
+    @OneToOne(() => PatientProfile, p => p.user)
+    patientProfile?: PatientProfile;
 }

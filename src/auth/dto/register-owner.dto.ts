@@ -1,12 +1,9 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { RegisterUserDto } from 'src/users/dto/register-user.dto';
 
 export class RegisterOwnerDto {
-    @IsNotEmpty()
-    name: string;
-
-    @IsEmail()
-    email: string;
-
-    @MinLength(6)
-    password: string;
+    @ValidateNested()
+    @Type(() => RegisterUserDto)
+    user: RegisterUserDto;
 }

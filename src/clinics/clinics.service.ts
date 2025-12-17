@@ -1,46 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Clinic } from './entities/clinic.entity';
 import { Repository } from 'typeorm';
-import { CreateClinicDto } from './dto/create-clinic.dto';
-import { ClinicUserRole } from '../clinic-user-role/entities/clinic-user-role.entity';
-import { ClinicRole } from '../clinic-user-role/entities/clinic-user-role.entity';
 import { UsersService } from '../users/users.service';
-import { ClinicsRepository } from './clinics.repository';
-import { ClinicUserRoleRepository } from 'src/clinic-user-role/clinic-user-role.repository';
+import { RegisterClinicDto } from './dto/register-clinic.dto';
+import { Clinic, ClinicStatus } from './entity/clinic.entity';
 
 @Injectable()
 export class ClinicsService {
   constructor(
 
-    // @InjectRepository(Clinic)
-    // private clinicRepo: Repository<Clinic>,
-    private clinicRepo: ClinicsRepository,
-    
-    // @InjectRepository(ClinicUserRole)
-    // private clinicUserRoleRepo: Repository<ClinicUserRole>,
-    private clinicUserRoleRepo: ClinicUserRoleRepository,
-
-    private usersService: UsersService,
+    @InjectRepository(Clinic)
+    private readonly clinicRepo: Repository<Clinic>,
   ) { }
 
-  async createClinic(dto: CreateClinicDto, ownerId: string) {
-    const user = await this.usersService.findById(ownerId);
-    if (!user) throw new NotFoundException('Usuário não encontrado');
-
+  async createDefaultClinic() {
     // 1. Criar clínica
-    const clinic = this.clinicRepo.create(dto);
+    const clinic = this.clinicRepo.create({
+      name: "Minha Clinica",
+      status: ClinicStatus.PENDING_SETUP
+    });
     await this.clinicRepo.save(clinic);
 
-    // 2. Criar vínculo OWNER
-    const ownerRole = this.clinicUserRoleRepo.create({
-      user,
-      clinic,
-      role: ClinicRole.OWNER,
-    });
-
-    await this.clinicUserRoleRepo.save(ownerRole);
-
     return clinic;
+  }
+
+  findById(id: string) {
+    return this.clinicRepo.findOne({ where: { id } });
+  }
+
+  async update(id: string, data: Partial<Clinic>) {
+    await this.clinicRepo.update(id, data);
+    return this.findById(id);
   }
 }

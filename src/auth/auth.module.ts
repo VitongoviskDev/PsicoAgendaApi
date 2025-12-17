@@ -3,16 +3,24 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ClinicsModule } from 'src/clinics/clinics.module';
+import { ClinicUserRoleModule } from 'src/old/clinic-user-role/clinic-user-role.module';
+import { JwtStrategy } from './jwt.strategy';
+import { PsychologistProfileModule } from 'src/psychologist-profile/psychologist-profile.module';
 
 @Module({
   imports: [
     UsersModule,
+    ClinicsModule,
+    ClinicUserRoleModule,
+    PsychologistProfileModule,
     JwtModule.register({
-      secret: 'SUPER_SECRET_KEY', // depois mova para env
-      signOptions: { expiresIn: '7d' },
+      secret: 'SUPER_SECRET_KEY',
+      signOptions: { expiresIn: '24HOUR' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
+  exports: [JwtStrategy]
 })
 export class AuthModule { }

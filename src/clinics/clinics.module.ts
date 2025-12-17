@@ -1,20 +1,18 @@
-import { Module } from '@nestjs/common';
-import { ClinicsService } from './clinics.service';
-import { ClinicsController } from './clinics.controller';
-import { ClinicUserRoleModule } from '../clinic-user-role/clinic-user-role.module';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Clinic } from './entities/clinic.entity';
-import { ClinicsRepository } from './clinics.repository';
+import { ClinicUserRole } from 'src/old/clinic-user-role/entities/clinic-user-role.entity';
 import { UsersModule } from 'src/users/users.module';
+import { ClinicsController } from './clinics.controller';
+import { ClinicsService } from './clinics.service';
+import { Clinic } from './entity/clinic.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Clinic]),
-    ClinicUserRoleModule,
-    UsersModule
+    TypeOrmModule.forFeature([Clinic, ClinicUserRole]),
+    forwardRef(() => UsersModule)
   ],
   controllers: [ClinicsController],
-  providers: [ClinicsService, ClinicsRepository],
-  exports: [ClinicsService, ClinicsRepository]
+  providers: [ClinicsService],
+  exports: [ClinicsService]
 })
 export class ClinicsModule { }
