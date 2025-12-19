@@ -2,14 +2,14 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException, U
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ClinicsService } from 'src/clinics/clinics.service';
-import { ClinicStatus } from 'src/clinics/entity/clinic.entity';
+import { Clinic, ClinicStatus } from 'src/clinics/entity/clinic.entity';
 import { DataSource } from 'typeorm';
-import { UserStatus } from '../users/entities/user.entity';
+import { User, UserStatus } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterOwnerDto } from './dto/register-owner.dto';
 import { ClinicStaffService } from 'src/clinic-staff/clinic-staff.service';
-import { StaffRole } from 'src/clinic-staff/entity/clinic-staf.entity';
+import { ClinicStaff, StaffRole } from 'src/clinic-staff/entity/clinic-staf.entity';
 
 @Injectable()
 export class AuthService {
@@ -23,27 +23,34 @@ export class AuthService {
     ) { }
 
     async registerOwner(dto: RegisterOwnerDto) {
-        return this.dataSource.transaction(async manager => {
+        return this.dataSource.transaction(async (manager) => {
 
-            // 1️⃣ Verifica se o usuário já existe
-            const exists = await this.usersService.findByEmail(dto.user.email);
-            if (exists) {
+            /* 1️⃣ Verifica se e-mail já existe */
+            const existingUser = await manager.findOne(User, {
+                where: { email: dto.user.email },
+            });
+
+            if (existingUser) {
                 throw new ConflictException('E-mail já está em uso.');
             }
 
-            // 2️⃣ Valida senha
+            /* 2️⃣ Valida senha */
             if (dto.user.password !== dto.user.confirm_password) {
-                throw new ConflictException('As senhas digitadas não coincidem');
+                throw new ConflictException('As senhas digitadas não coincidem.');
             }
 
-            // 4️⃣ Cria clínica padrão
-            const clinic = await this.clinicsService.createDefaultClinic();
+            /* 3️⃣ Cria clínica padrão */
+            const clinic = await manager.create(Clinic, {
+                name: 'Minha clínica',
+                status: ClinicStatus.PENDING_SETUP,
+            });
 
+            await manager.save(clinic);
 
-            // 3️⃣ Cria usuário
+            /* 4️⃣ Cria usuário */
             const hashedPassword = await bcrypt.hash(dto.user.password, 10);
 
-            const user = await this.usersService.create({
+            const user = manager.create(User, {
                 name: dto.user.name,
                 email: dto.user.email,
                 password: hashedPassword,
@@ -51,14 +58,18 @@ export class AuthService {
                 lastClinicId: clinic.id,
             });
 
-            // 6️⃣ Cria vínculo administrativo (OWNER)
-            await this.clinicStaffService.create({
+            await manager.save(user);
+
+            /* 5️⃣ Cria vínculo administrativo (OWNER) */
+            const staff = manager.create(ClinicStaff, {
                 userId: user.id,
                 clinicId: clinic.id,
                 role: StaffRole.OWNER,
             });
 
-            // 7️⃣ Token
+            await manager.save(staff);
+
+            /* 6️⃣ Gera token */
             const payload = { sub: user.id };
             const access_token = this.jwtService.sign(payload);
 
@@ -70,6 +81,7 @@ export class AuthService {
             };
         });
     }
+
 
 
     async login(dto: LoginDto) {
@@ -116,18 +128,28 @@ export class AuthService {
 
         // 7️⃣ Usuário (com flags de profile)
         const userResponse = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            cpf: user.cpf,
-            status: user.status,
-
+            id: user?.id,
+            name: user?.name,
+            email: user?.email,
+            phone: user?.phone,
+            birthDate: user?.birthDate,
+            cpf: user?.cpf,
+            status: user?.status,
             profiles: {
-                staff: !!user.staffProfile,
-                psychologist: !!user.psychologistProfile,
-                patient: !!user.patientProfile,
+                staff: !!activeStaff && !!user?.staffProfile ? {
+                    active: user?.staffProfile.active,
+                    role: activeStaff.role,
+                } : null,
+                psychologist: !!user?.psychologistProfile ? {
+                    active: user.psychologistProfile.active,
+                    crp: user.psychologistProfile.crp,
+                    specialty: user.psychologistProfile.specialty ?? null,
+                } : null,
+                patient: !!user?.patientProfile ? {
+                    notes: user.patientProfile.notes ?? null,
+                } : null,
             },
+
         };
 
         // 8️⃣ Clínica ativa
@@ -143,6 +165,8 @@ export class AuthService {
         const payload = { sub: user.id };
         const access_token = this.jwtService.sign(payload);
 
+
+
         return {
             user: userResponse,
             currentClinic,
@@ -150,7 +174,5 @@ export class AuthService {
             access_token,
         };
     }
-
-    setLastClinic
 
 }

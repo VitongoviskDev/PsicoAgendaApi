@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminProfileModule } from './admin-profile/admin-profile.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { ClinicUserRoleModule } from './old/clinic-user-role/clinic-user-role.module';
 import { ClinicsModule } from './clinics/clinics.module';
 import { PatientProfileModule } from './patient-profile/patient-profile.module';
 import { PsychologistProfileModule } from './psychologist-profile/psychologist-profile.module';
@@ -28,17 +26,18 @@ import { StaffProfileModule } from './staff-profile/staff-profile.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    UsersModule,
     AuthModule,
+
+    UsersModule,
     ClinicsModule,
-    ClinicUserRoleModule,
+
     PsychologistProfileModule,
     PatientProfileModule,
-    AdminProfileModule,
+    StaffProfileModule,
+
     ClinicStaffModule,
     ClinicPsychologistModule,
     ClinicPatientModule,
-    StaffProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService, ClinicPsychologistService],

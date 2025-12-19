@@ -1,11 +1,12 @@
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum ClinicStatus {
-    PENDING_SETUP = 'pending_setup',
-    ACTIVE = 'active',
+    PENDING_SETUP = 'PENDING_SETUP',
+    ACTIVE = 'ACTIVE',
 }
 
 // users/entities/user.entity.ts
+@Entity('clinics')
 export class Clinic {
     @PrimaryGeneratedColumn('uuid')
     id: string;

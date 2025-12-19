@@ -37,24 +37,4 @@ export class AuthController {
     getProfile(@Req() req) {
         return req.user;
     }
-
-    @UseGuards(JwtAuthGuard)
-    @Post('complete-registration')
-    @UseInterceptors(FileInterceptor('image'))
-    async completeRegistration(
-        @UploadedFile() image: Express.Multer.File,
-        @Body() body: CompleteRegistrationDto,
-        @Req() req
-    ) {
-        const data = await this.authService.completeRegistration(req.user.sub, {
-            ...body,
-            image
-        });
-
-        return {
-            message: 'Cadastro finalizado com sucesso!',
-            data,
-            status: 200
-        };
-    }
 }

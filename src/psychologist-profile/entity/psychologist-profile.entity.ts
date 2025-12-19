@@ -7,7 +7,11 @@ export class PsychologistProfile {
     @PrimaryColumn('uuid')
     userId: string;
 
-    @OneToOne(() => User, u => u.psychologistProfile, { onDelete: 'CASCADE' })
+    @OneToOne(
+        () => User,
+        u => u.psychologistProfile,
+        { onDelete: 'CASCADE' }
+    )
     @JoinColumn({ name: 'userId' })
     user: User;
 

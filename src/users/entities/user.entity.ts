@@ -1,7 +1,7 @@
 import { PatientProfile } from "src/patient-profile/entity/patient-profile.entity";
 import { PsychologistProfile } from "src/psychologist-profile/entity/psychologist-profile.entity";
 import { StaffProfile } from "src/staff-profile/entity/staff-profile.entity";
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserStatus {
     PENDING_REGISTRATION = 'PENDING_REGISTRATION',
@@ -44,7 +44,7 @@ export class User {
     })
     status: UserStatus;
 
-    @OneToOne(() => StaffProfile, profile => profile.user)
+    @OneToOne(() => StaffProfile, p => p.user)
     staffProfile?: StaffProfile;
 
     @OneToOne(() => PsychologistProfile, p => p.user)

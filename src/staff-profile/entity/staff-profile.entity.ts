@@ -7,7 +7,11 @@ export class StaffProfile {
     @PrimaryColumn('uuid')
     userId: string;
 
-    @OneToOne(() => User, { onDelete: 'CASCADE' })
+    @OneToOne(
+        () => User,
+        user => user.staffProfile,
+        { onDelete: 'CASCADE' }
+    )
     @JoinColumn({ name: 'userId' })
     user: User;
 

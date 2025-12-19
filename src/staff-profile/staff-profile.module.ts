@@ -4,6 +4,7 @@ import { StaffProfileController } from './staff-profile.controller';
 
 @Module({
   providers: [StaffProfileService],
-  controllers: [StaffProfileController]
+  controllers: [StaffProfileController],
+  exports: [StaffProfileService]
 })
-export class StaffProfileModule {}
+export class StaffProfileModule { }

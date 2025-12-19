@@ -1,15 +1,16 @@
-import { Controller, Get, Post, Body, UseGuards, Patch, Req, ForbiddenException, Param } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { SwitchClinicDto } from './dto/switch-clinic.dto';
-import { ClinicUserRoleService } from 'src/old/clinic-user-role/clinic-user-role.service';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { ApiResponse } from 'src/responses/ApiResponse';
+import { CompleteUserProfileDto } from './dto/complete-user-profile.dto';
+import { UsersService } from './users.service';
+import { CurrentClinic } from 'src/common/decorators/current-clinic.decorator';
 
 @Controller('users')
 export class UsersController {
     constructor(
         private readonly usersService: UsersService,
-        private readonly clinicUserRoleService: ClinicUserRoleService,
     ) { }
 
     @Get()
@@ -23,20 +24,19 @@ export class UsersController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Patch('switch-clinic')
-    async selectClinic(@Req() req, @Body() dto: SwitchClinicDto) {
-        const userId = req.user.sub;
-        const { clinicId } = dto;
-
-        // valida que usuário pertence à clínica
-        const hasAccess = await this.clinicUserRoleService.userHasAnyRole(userId, clinicId);
-        if (!hasAccess) {
-            throw new ForbiddenException('Você não tem acesso a essa clínica.');
+    @UseInterceptors(FileInterceptor('profile_picture'))
+    @Post('complete-profile/owner')
+    async completeProfile(
+        @CurrentUser() user,
+        @UploadedFile() file: Express.Multer.File,
+        @Body() dto: CompleteUserProfileDto,
+    ) {
+        const data = await this.usersService.completeProfile(user.id, user.lastClinicId, dto, file);
+        const response: ApiResponse = {
+            message: 'Perfil atualizado com sucesso!',
+            data: data,
+            status: 200
         }
-
-        // salvar
-        await this.usersService.setLastClinic(userId, clinicId);
-
-        return { message: 'Clínica selecionada.' };
+        return response
     }
 }

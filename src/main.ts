@@ -16,8 +16,11 @@ async function bootstrap() {
   });
 
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true
+  }));
+
   await app.listen(process.env.PORT ?? 5000);
 }
 bootstrap();
