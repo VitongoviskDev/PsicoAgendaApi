@@ -15,7 +15,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-
+  console.log('DATABASE_URL:', process.env.DATABASE_URL);
 
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({
