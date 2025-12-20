@@ -23,14 +23,20 @@ import { StaffProfileModule } from './staff-profile/staff-profile.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
+      autoLoadEntities: true,
+      synchronize: false,
 
       ssl: {
         rejectUnauthorized: false,
       },
 
-      autoLoadEntities: true,
-      synchronize: false,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     }),
+
 
 
     AuthModule,
