@@ -6,6 +6,7 @@ import { ApiResponse } from 'src/responses/ApiResponse';
 import { CompleteUserProfileDto } from './dto/complete-user-profile.dto';
 import { UsersService } from './users.service';
 import { CurrentClinic } from 'src/common/decorators/current-clinic.decorator';
+import type { Express } from 'express';
 
 @Controller('users')
 export class UsersController {

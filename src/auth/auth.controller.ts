@@ -5,6 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterOwnerDto } from './dto/register-owner.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 
 @Controller('auth')
 export class AuthController {

@@ -5,12 +5,5 @@
     "test",
     "dist",
     "**/*spec.ts"
-  ],
-  "compilerOptions": {
-    "types": [
-      "node",
-      "express",
-      "multer"
-    ]
-  }
+  ]
 }

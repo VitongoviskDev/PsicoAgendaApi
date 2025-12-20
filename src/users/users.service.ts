@@ -6,6 +6,7 @@ import { CompleteUserProfileDto } from './dto/complete-user-profile.dto';
 import { PsychologistProfile } from 'src/psychologist-profile/entity/psychologist-profile.entity';
 import { StaffProfile } from 'src/staff-profile/entity/staff-profile.entity';
 import { ClinicStaff } from 'src/clinic-staff/entity/clinic-staf.entity';
+import type { Express } from 'express';
 
 @Injectable()
 export class UsersService {
