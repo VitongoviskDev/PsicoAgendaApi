@@ -1,15 +1,15 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { ClinicsService } from 'src/clinics/clinics.service';
-import { Clinic, ClinicStatus } from 'src/clinics/entity/clinic.entity';
+import { ClinicsService } from '../clinics/clinics.service';
+import { Clinic, ClinicStatus } from '../clinics/entity/clinic.entity';
 import { DataSource } from 'typeorm';
 import { User, UserStatus } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterOwnerDto } from './dto/register-owner.dto';
-import { ClinicStaffService } from 'src/clinic-staff/clinic-staff.service';
-import { ClinicStaff, StaffRole } from 'src/clinic-staff/entity/clinic-staf.entity';
+import { ClinicStaffService } from '../clinic-staff/clinic-staff.service';
+import { ClinicStaff, StaffRole } from '../clinic-staff/entity/clinic-staf.entity';
 
 @Injectable()
 export class AuthService {
