@@ -1,4 +1,4 @@
-import { User } from '../users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('staff_profiles')
