@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiResponse } from 'src/responses/ApiResponse';
+import { ApiResponse } from '../responses/ApiResponse';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterOwnerDto } from './dto/register-owner.dto';

@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { ApiResponse } from 'src/responses/ApiResponse';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { ApiResponse } from '../responses/ApiResponse';
 import { CompleteUserProfileDto } from './dto/complete-user-profile.dto';
 import { UsersService } from './users.service';
-import { CurrentClinic } from 'src/common/decorators/current-clinic.decorator';
+import { CurrentClinic } from '../common/decorators/current-clinic.decorator';
 import type { Express } from 'express';
 
 @Controller('users')

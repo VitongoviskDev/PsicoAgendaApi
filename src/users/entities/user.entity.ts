@@ -1,6 +1,6 @@
-import { PatientProfile } from "src/patient-profile/entity/patient-profile.entity";
-import { PsychologistProfile } from "src/psychologist-profile/entity/psychologist-profile.entity";
-import { StaffProfile } from "src/staff-profile/entity/staff-profile.entity";
+import { PatientProfile } from "../patient-profile/entity/patient-profile.entity";
+import { PsychologistProfile } from "../psychologist-profile/entity/psychologist-profile.entity";
+import { StaffProfile } from "../staff-profile/entity/staff-profile.entity";
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserStatus {

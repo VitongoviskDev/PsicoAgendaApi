@@ -3,10 +3,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
-import { ClinicsModule } from 'src/clinics/clinics.module';
+import { ClinicsModule } from '../clinics/clinics.module';
 import { JwtStrategy } from './jwt.strategy';
-import { PsychologistProfileModule } from 'src/psychologist-profile/psychologist-profile.module';
-import { ClinicStaffModule } from 'src/clinic-staff/clinic-staff.module';
+import { PsychologistProfileModule } from '../psychologist-profile/psychologist-profile.module';
+import { ClinicStaffModule } from '../clinic-staff/clinic-staff.module';
 
 @Module({
   imports: [
