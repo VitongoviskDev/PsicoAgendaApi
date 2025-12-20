@@ -16,11 +16,11 @@ export class ClinicStaff {
     id: string;
 
     @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
-    @JoinColumn({ name: 'user_id' })
+    @JoinColumn({ name: 'userId' })
     user: User;
 
     @ManyToOne(() => Clinic, { onDelete: 'CASCADE', nullable: false })
-    @JoinColumn({ name: 'clinic_id' })
+    @JoinColumn({ name: 'clinicId' })
     clinic: Clinic;
 
     @Column({
