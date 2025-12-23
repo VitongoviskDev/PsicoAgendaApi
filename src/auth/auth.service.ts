@@ -25,7 +25,6 @@ export class AuthService {
     async registerOwner(dto: RegisterOwnerDto) {
         return this.dataSource.transaction(async (manager) => {
 
-            /* 1️⃣ Verifica se e-mail já existe */
             const existingUser = await manager.findOne(User, {
                 where: { email: dto.user.email },
             });
@@ -34,12 +33,10 @@ export class AuthService {
                 throw new ConflictException('E-mail já está em uso.');
             }
 
-            /* 2️⃣ Valida senha */
             if (dto.user.password !== dto.user.confirm_password) {
                 throw new ConflictException('As senhas digitadas não coincidem.');
             }
 
-            /* 3️⃣ Cria clínica padrão */
             const clinic = await manager.create(Clinic, {
                 name: 'Minha clínica',
                 status: ClinicStatus.PENDING_SETUP,
@@ -47,7 +44,6 @@ export class AuthService {
 
             await manager.save(clinic);
 
-            /* 4️⃣ Cria usuário */
             const hashedPassword = await bcrypt.hash(dto.user.password, 10);
 
             const user = manager.create(User, {
@@ -60,16 +56,15 @@ export class AuthService {
 
             await manager.save(user);
 
-            /* 5️⃣ Cria vínculo administrativo (OWNER) */
+
             const staff = manager.create(ClinicStaff, {
-                userId: user.id,
-                clinicId: clinic.id,
+                user: user,
+                clinic: clinic,
                 role: StaffRole.OWNER,
             });
 
             await manager.save(staff);
 
-            /* 6️⃣ Gera token */
             const payload = { sub: user.id };
             const access_token = this.jwtService.sign(payload);
 
@@ -162,7 +157,10 @@ export class AuthService {
         };
 
         // 9️⃣ Token
-        const payload = { sub: user.id };
+        const payload = {
+            sub: user.id,
+            clinicId: activeStaff.clinic.id,
+        };
         const access_token = this.jwtService.sign(payload);
 
 

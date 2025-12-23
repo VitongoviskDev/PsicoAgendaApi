@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ClinicWorkingHours } from '../../clinic-working-hours/entity/clinic-working-hours.entity';
 
 export enum ClinicStatus {
     PENDING_SETUP = 'PENDING_SETUP',
@@ -14,10 +16,30 @@ export class Clinic {
     @Column()
     name: string;
 
+    @Column({ nullable: true })
+    description: string;
+
+    @Column({ nullable: true })
+    cnpj: string;
+
+    @Column({ nullable: true })
+    openedAt: Date;
+
     @Column({
         type: 'enum',
         enum: ClinicStatus,
         default: ClinicStatus.PENDING_SETUP,
     })
     status: ClinicStatus;
+
+    @OneToMany(
+        () => ClinicWorkingHours,
+        workingHours => workingHours.clinic,
+        {
+            cascade: true,
+            eager: true,
+        }
+    )
+    workingHours: ClinicWorkingHours[];
+
 }

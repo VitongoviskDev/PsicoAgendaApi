@@ -7,6 +7,7 @@ import { ClinicsModule } from '../clinics/clinics.module';
 import { JwtStrategy } from './jwt.strategy';
 import { PsychologistProfileModule } from '../psychologist-profile/psychologist-profile.module';
 import { ClinicStaffModule } from '../clinic-staff/clinic-staff.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -14,10 +15,15 @@ import { ClinicStaffModule } from '../clinic-staff/clinic-staff.module';
     ClinicsModule,
     ClinicStaffModule,
     PsychologistProfileModule,
-    JwtModule.register({
-      secret: 'SUPER_SECRET_KEY',
-      signOptions: { expiresIn: '24HOUR' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '24h' },
+      }),
     }),
+
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

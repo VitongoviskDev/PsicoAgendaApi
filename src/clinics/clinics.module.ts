@@ -6,12 +6,14 @@ import { ClinicsService } from './clinics.service';
 import { Clinic } from './entity/clinic.entity';
 import { ClinicStaff } from '../clinic-staff/entity/clinic-staf.entity';
 import { User } from '../users/entities/user.entity';
+import { ClinicWorkingHours } from '../clinic-working-hours/entity/clinic-working-hours.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Clinic,
       ClinicStaff,
+      ClinicWorkingHours,
       User
     ])
   ],

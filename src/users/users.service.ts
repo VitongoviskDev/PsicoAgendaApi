@@ -25,11 +25,9 @@ export class UsersService {
     findById(id: string) {
         return this.usersRepo.findOne({ where: { id } });
     }
+
     findByCpf(cpf: string) {
         return this.usersRepo.findOne({ where: { cpf } });
-    }
-    findByEmail(email: string) {
-        return this.usersRepo.findOne({ where: { email } });
     }
 
     create(data: Partial<User>) {
@@ -46,10 +44,6 @@ export class UsersService {
                 patientProfile: true,
             },
         });
-    }
-
-    async updateStatus(id: string, status: UserStatus) {
-        await this.usersRepo.update(id, { status });
     }
 
     async update(id: string, data: Partial<User>) {
@@ -90,18 +84,17 @@ export class UsersService {
                 }
             }
 
-            const staffExists = await manager.findOne(StaffProfile, {
-                where: { user: { id: userId } },
-            });
+            // const staffExists = await manager.findOne(StaffProfile, {
+            //     where: { user: { id: userId } },
+            // });
 
-            if (!staffExists) {
-                await manager.save(StaffProfile, {
-                    user: { id: userId },
-                    active: true,
-                });
-            }
+            // if (!staffExists) {
+            //     await manager.save(StaffProfile, {
+            //         user: { id: userId },
+            //         active: true,
+            //     });
+            // }
 
-            // 🔹 Recarrega usuário com profiles
             const user = await manager.findOne(User, {
                 where: { id: userId },
                 relations: {
@@ -148,8 +141,4 @@ export class UsersService {
 
         });
     }
-
-
-
-
 }

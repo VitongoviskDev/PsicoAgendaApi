@@ -13,6 +13,7 @@ import { ClinicStaffModule } from './clinic-staff/clinic-staff.module';
 import { ClinicPsychologistModule } from './clinic-psychologists/clinic-psychologist.module';
 import { ClinicPatientModule } from './clinic-patients/clinic-patient.module';
 import { StaffProfileModule } from './staff-profile/staff-profile.module';
+import { ClinicWorkingHoursModule } from './clinic-working-hours/clinic-working-hours.module';
 
 @Module({
   imports: [
@@ -37,17 +38,19 @@ import { StaffProfileModule } from './staff-profile/staff-profile.module';
       },
     }),
 
-
-
     AuthModule,
+    
     UsersModule,
     ClinicsModule,
+
     PsychologistProfileModule,
     PatientProfileModule,
     StaffProfileModule,
+
     ClinicStaffModule,
     ClinicPsychologistModule,
     ClinicPatientModule,
+    ClinicWorkingHoursModule,
   ],
   controllers: [AppController],
   providers: [AppService],
