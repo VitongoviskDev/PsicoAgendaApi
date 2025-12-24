@@ -1,0 +1,1 @@
+{"version":3,"file":"register-owner.dto.js","sourceRoot":"","sources":["../../../../src/auth/dto/register-owner.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAAiD;AACjD,yDAAyC;AACzC,yEAAoE;AAEpE,MAAa,gBAAgB;IAGzB,IAAI,CAAkB;CACzB;AAJD,4CAIC;AADG;IAFC,IAAA,gCAAc,GAAE;IAChB,IAAA,wBAAI,EAAC,GAAG,EAAE,CAAC,mCAAe,CAAC;8BACtB,mCAAe;8CAAC"}

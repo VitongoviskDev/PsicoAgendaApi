@@ -17,6 +17,9 @@ export class Clinic {
     name: string;
 
     @Column({ nullable: true })
+    nickname: string; // 👈 CAMPO DE TESTE
+
+    @Column({ nullable: true })
     description: string;
 
     @Column({ nullable: true })
@@ -41,5 +44,4 @@ export class Clinic {
         }
     )
     workingHours: ClinicWorkingHours[];
-
 }
