@@ -1,11 +1,9 @@
 import { Body, Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiResponse } from '../responses/ApiResponse';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { RegisterOwnerDto } from './dto/register-owner.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
+import { AuthService } from '@/auth/auth.service';
+import { RegisterOwnerDto } from '@/auth/dto/register-owner.dto';
+import { ApiResponse } from '@/utils/responses/ApiResponse';
+import { LoginDto } from '@/auth/dto/login.dto';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {

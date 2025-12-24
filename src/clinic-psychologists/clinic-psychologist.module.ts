@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ClinicPsychologistService } from './clinic-psychologist.service';
-import { ClinicPsychologistController } from './clinic-psychologist.controller';
+import { ClinicPsychologistService } from '@/clinic-psychologists/clinic-psychologist.service';
+import { ClinicPsychologistController } from '@/clinic-psychologists/clinic-psychologist.controller';
 
 @Module({
   providers: [ClinicPsychologistService],

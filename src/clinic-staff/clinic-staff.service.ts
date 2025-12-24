@@ -2,9 +2,9 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { User } from '../users/entities/user.entity';
-import { ClinicStaff, StaffRole } from './entity/clinic-staf.entity';
-import { Clinic } from '../clinics/entity/clinic.entity';
+import { User } from '@/users/entities/user.entity';
+import { ClinicStaff, StaffRole } from '@/clinic-staff/entity/clinic-staf.entity';
+import { Clinic } from '@/clinics/entity/clinic.entity';
 
 @Injectable()
 export class ClinicStaffService {

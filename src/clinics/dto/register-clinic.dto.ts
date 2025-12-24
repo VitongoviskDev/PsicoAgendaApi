@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ClinicStatus } from '../entity/clinic.entity';
+import { ClinicStatus } from '@/clinics/entity/clinic.entity';
 
 export class RegisterClinicDto {
     @IsString()

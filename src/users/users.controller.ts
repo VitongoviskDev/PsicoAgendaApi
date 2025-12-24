@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterce
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { ApiResponse } from '../responses/ApiResponse';
+import { ApiResponse } from '../utils/responses/ApiResponse';
 import { CompleteUserProfileDto } from './dto/complete-user-profile.dto';
 import { UsersService } from './users.service';
 import { CurrentClinic } from '../common/decorators/current-clinic.decorator';

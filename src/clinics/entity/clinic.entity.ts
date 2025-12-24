@@ -1,6 +1,6 @@
 
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ClinicWorkingHours } from '../../clinic-working-hours/entity/clinic-working-hours.entity';
+import { ClinicWorkingHours } from '@/clinic-working-hours/entity/clinic-working-hours.entity';
 
 export enum ClinicStatus {
     PENDING_SETUP = 'PENDING_SETUP',

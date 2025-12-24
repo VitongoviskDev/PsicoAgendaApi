@@ -1,8 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PsychologistProfile } from './entity/psychologist-profile.entity';
-import { PsychologistProfileService } from './psychologist-profile.service';
-import { PsychologistProfileController } from './psychologist-profile.controller';
+import { PsychologistProfile } from '@/psychologist-profile/entity/psychologist-profile.entity';
+import { PsychologistProfileService } from '@/psychologist-profile/psychologist-profile.service';
+import { PsychologistProfileController } from '@/psychologist-profile/psychologist-profile.controller';
 
 @Module({
   imports: [

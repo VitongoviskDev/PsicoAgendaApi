@@ -1,6 +1,6 @@
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { WorkingHoursDto } from '../../clinic-working-hours/dto/clinic-working-hours.dto';
+import { WorkingHoursDto } from '@/clinic-working-hours/dto/clinic-working-hours.dto';
 
 export class CompleteClinicDto {
     @IsString()

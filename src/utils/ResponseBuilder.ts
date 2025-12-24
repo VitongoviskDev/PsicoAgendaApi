@@ -1,6 +1,6 @@
-import { PaginationMeta } from "../pagination/PaginationMeta";
-import { ApiResponse } from "../responses/ApiResponse";
-import { PaginatedResponse } from "../responses/PaginateResponse";
+import { PaginationMeta } from "@/utils/pagination/PaginationMeta";
+import { ApiResponse } from "@/utils/responses/ApiResponse";
+import { PaginatedResponse } from "@/utils/responses/PaginateResponse";
 
 export class ResponseBuilder {
     static success<T>(message: string, data?: T, status = 200): ApiResponse<T> {

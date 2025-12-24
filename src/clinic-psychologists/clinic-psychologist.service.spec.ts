@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ClinicPsychologistService } from './clinic-psychologist.service';
+import { ClinicPsychologistService } from '@/clinic-psychologists/clinic-psychologist.service';
 
 describe('ClinicPsychologistService', () => {
   let service: ClinicPsychologistService;

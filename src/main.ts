@@ -1,8 +1,8 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from '@/app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import 'dotenv/config';
-import { GlobalHttpExceptionFilter } from './common/filters/http-exception.filter';
+import { GlobalHttpExceptionFilter } from '@/common/filters/http-exception.filter';
 
 async function bootstrap() {
 

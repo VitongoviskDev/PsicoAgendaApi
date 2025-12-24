@@ -1,12 +1,9 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { UsersService } from '../users/users.service';
-import { RegisterClinicDto } from './dto/register-clinic.dto';
-import { Clinic, ClinicStatus } from './entity/clinic.entity';
-import { CompleteClinicDto } from './dto/complete-clinic.dto';
-import type { Express } from 'express';
-import { ClinicWorkingHours } from '../clinic-working-hours/entity/clinic-working-hours.entity';
+import { ClinicWorkingHours } from '@/clinic-working-hours/entity/clinic-working-hours.entity';
+import { CompleteClinicDto } from '@/clinics/dto/complete-clinic.dto';
+import { Clinic, ClinicStatus } from '@/clinics/entity/clinic.entity';
 
 @Injectable()
 export class ClinicsService {

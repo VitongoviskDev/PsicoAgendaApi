@@ -1,5 +1,5 @@
-import { Clinic } from "../../clinics/entity/clinic.entity";
-import { User } from "../../users/entities/user.entity";
+import { Clinic } from "@/clinics/entity/clinic.entity";
+import { User } from "@/users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 // clinic-psychologists/entities/clinic-psychologist.entity.ts

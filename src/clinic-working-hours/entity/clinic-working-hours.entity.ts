@@ -1,6 +1,6 @@
 
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Clinic } from '../../clinics/entity/clinic.entity';
+import { Clinic } from '@/clinics/entity/clinic.entity';
 import { Exclude } from 'class-transformer';
 
 

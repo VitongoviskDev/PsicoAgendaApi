@@ -1,12 +1,11 @@
 import { Controller, Post, Body, UseGuards, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { ClinicsService } from './clinics.service';
-import { RegisterClinicDto } from './dto/register-clinic.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ApiResponse } from '../responses/ApiResponse';
+import { ClinicsService } from '@/clinics/clinics.service';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { ApiResponse } from '@/utils/responses/ApiResponse';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Express } from 'express';
-import { CompleteClinicDto } from './dto/complete-clinic.dto';
-import { CurrentClinic } from '../common/decorators/current-clinic.decorator';
+import { CompleteClinicDto } from '@/clinics/dto/complete-clinic.dto';
+import { CurrentClinic } from '@/common/decorators/current-clinic.decorator';
 
 @Controller('clinics')
 export class ClinicsController {

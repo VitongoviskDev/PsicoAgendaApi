@@ -2,18 +2,18 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { ClinicsModule } from './clinics/clinics.module';
-import { PatientProfileModule } from './patient-profile/patient-profile.module';
-import { PsychologistProfileModule } from './psychologist-profile/psychologist-profile.module';
-import { UsersModule } from './users/users.module';
-import { ClinicStaffModule } from './clinic-staff/clinic-staff.module';
-import { ClinicPsychologistModule } from './clinic-psychologists/clinic-psychologist.module';
-import { ClinicPatientModule } from './clinic-patients/clinic-patient.module';
-import { StaffProfileModule } from './staff-profile/staff-profile.module';
-import { ClinicWorkingHoursModule } from './clinic-working-hours/clinic-working-hours.module';
+import { AppController } from '@/app.controller';
+import { AppService } from '@/app.service';
+import { AuthModule } from '@/auth/auth.module';
+import { ClinicsModule } from '@/clinics/clinics.module';
+import { PatientProfileModule } from '@/patient-profile/patient-profile.module';
+import { PsychologistProfileModule } from '@/psychologist-profile/psychologist-profile.module';
+import { UsersModule } from '@/users/users.module';
+import { ClinicStaffModule } from '@/clinic-staff/clinic-staff.module';
+import { ClinicPsychologistModule } from '@/clinic-psychologists/clinic-psychologist.module';
+import { ClinicPatientModule } from '@/clinic-patients/clinic-patient.module';
+import { StaffProfileModule } from '@/staff-profile/staff-profile.module';
+import { ClinicWorkingHoursModule } from '@/clinic-working-hours/clinic-working-hours.module';
 
 @Module({
   imports: [

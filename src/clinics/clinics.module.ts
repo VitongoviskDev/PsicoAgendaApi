@@ -1,12 +1,11 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from '../users/users.module';
-import { ClinicsController } from './clinics.controller';
-import { ClinicsService } from './clinics.service';
-import { Clinic } from './entity/clinic.entity';
-import { ClinicStaff } from '../clinic-staff/entity/clinic-staf.entity';
-import { User } from '../users/entities/user.entity';
-import { ClinicWorkingHours } from '../clinic-working-hours/entity/clinic-working-hours.entity';
+import { ClinicsController } from '@/clinics/clinics.controller';
+import { ClinicsService } from '@/clinics/clinics.service';
+import { Clinic } from '@/clinics/entity/clinic.entity';
+import { ClinicStaff } from '@/clinic-staff/entity/clinic-staf.entity';
+import { User } from '@/users/entities/user.entity';
+import { ClinicWorkingHours } from '@/clinic-working-hours/entity/clinic-working-hours.entity';
 
 @Module({
   imports: [
