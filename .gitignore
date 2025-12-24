@@ -6,3 +6,7 @@ tmp/
 temp/
 # build
 dist
+
+#env
+.env
+.env*
