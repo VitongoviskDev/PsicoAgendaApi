@@ -3,6 +3,7 @@ import { AppModule } from '@/app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import 'dotenv/config';
 import { GlobalHttpExceptionFilter } from '@/common/filters/http-exception.filter';
+import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 
 async function bootstrap() {
 
@@ -15,7 +16,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useGlobalFilters(new GlobalHttpExceptionFilter());
+  app.useGlobalFilters(
+    new ValidationExceptionFilter(),
+    new GlobalHttpExceptionFilter()
+  );
+
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector)),
   );

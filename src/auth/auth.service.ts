@@ -10,6 +10,7 @@ import { LoginDto } from '@/auth/dto/login.dto';
 import { RegisterOwnerDto } from '@/auth/dto/register-owner.dto';
 import { ClinicStaffService } from '@/clinic-staff/clinic-staff.service';
 import { ClinicStaff, StaffRole } from '@/clinic-staff/entity/clinic-staf.entity';
+import { FieldError, FormValidationException } from '@/common/exceptions/form-validation.exception';
 
 @Injectable()
 export class AuthService {
@@ -25,16 +26,26 @@ export class AuthService {
     async registerOwner(dto: RegisterOwnerDto) {
         return this.dataSource.transaction(async (manager) => {
 
+
+            // VALIDAÇÃO DE ERRO DE ENTRADA
+            const formFieldsErrors: FieldError[] = [];
+
+            if (dto.user.password.length < 8)
+                formFieldsErrors.push({ field: 'password', error: 'Senha deve ter no mínimo 8 caracteres' })
+
+            if (dto.user.password !== dto.user.confirm_password)
+                formFieldsErrors.push({ field: "confirm_password", error: "As senhas digitadas não conferem" })
+
+            if (formFieldsErrors.length > 0)
+                throw new FormValidationException(formFieldsErrors);
+
+
             const existingUser = await manager.findOne(User, {
                 where: { email: dto.user.email },
             });
 
             if (existingUser) {
                 throw new ConflictException('E-mail já está em uso.');
-            }
-
-            if (dto.user.password !== dto.user.confirm_password) {
-                throw new ConflictException('As senhas digitadas não coincidem.');
             }
 
             const clinic = await manager.create(Clinic, {
@@ -162,8 +173,6 @@ export class AuthService {
             clinicId: activeStaff.clinic.id,
         };
         const access_token = this.jwtService.sign(payload);
-
-
 
         return {
             user: userResponse,

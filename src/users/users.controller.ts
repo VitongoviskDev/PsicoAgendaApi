@@ -1,43 +1,4 @@
-import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { ApiResponse } from '../utils/responses/ApiResponse';
-import { CompleteUserProfileDto } from './dto/complete-user-profile.dto';
-import { UsersService } from './users.service';
-import { CurrentClinic } from '../common/decorators/current-clinic.decorator';
-import type { Express } from 'express';
+import { Controller } from '@nestjs/common';
 
 @Controller('users')
-export class UsersController {
-    constructor(
-        private readonly usersService: UsersService,
-    ) { }
-
-    @Get()
-    findAll() {
-        return this.usersService.findAll();
-    }
-
-    @Get('cpf/:cpf')
-    findByCpf(@Param('cpf') cpf: string) {
-        return this.usersService.findByCpf(cpf);
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FileInterceptor('profile_picture'))
-    @Post('complete-profile/owner')
-    async completeProfile(
-        @CurrentUser() user,
-        @UploadedFile() file: Express.Multer.File,
-        @Body() dto: CompleteUserProfileDto,
-    ) {
-        const data = await this.usersService.completeProfile(user.id, user.lastClinicId, dto, file);
-        const response: ApiResponse = {
-            message: 'Perfil atualizado com sucesso!',
-            data: data,
-            status: 200
-        }
-        return response
-    }
-}
+export class UsersController { }

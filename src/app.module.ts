@@ -1,19 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { AuthModule } from '@/auth/auth.module';
-import { ClinicsModule } from '@/clinics/clinics.module';
-import { PatientProfileModule } from '@/patient-profile/patient-profile.module';
-import { PsychologistProfileModule } from '@/psychologist-profile/psychologist-profile.module';
 import { UsersModule } from '@/users/users.module';
-import { ClinicStaffModule } from '@/clinic-staff/clinic-staff.module';
-import { ClinicPsychologistModule } from '@/clinic-psychologists/clinic-psychologist.module';
-import { ClinicPatientModule } from '@/clinic-patients/clinic-patient.module';
-import { StaffProfileModule } from '@/staff-profile/staff-profile.module';
-import { ClinicWorkingHoursModule } from '@/clinic-working-hours/clinic-working-hours.module';
+import { UserClinicModule } from './user-clinic/user-clinic.module';
+import { ClinicsModule } from './clinics/clinics.module';
 
 @Module({
   imports: [
@@ -26,7 +20,7 @@ import { ClinicWorkingHoursModule } from '@/clinic-working-hours/clinic-working-
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
       synchronize: false,
-
+      migrationsRun: false,
       ssl: {
         rejectUnauthorized: false,
       },
@@ -36,21 +30,14 @@ import { ClinicWorkingHoursModule } from '@/clinic-working-hours/clinic-working-
           rejectUnauthorized: false,
         },
       },
+
     }),
 
     AuthModule,
-    
+
     UsersModule,
     ClinicsModule,
-
-    PsychologistProfileModule,
-    PatientProfileModule,
-    StaffProfileModule,
-
-    ClinicStaffModule,
-    ClinicPsychologistModule,
-    ClinicPatientModule,
-    ClinicWorkingHoursModule,
+    UserClinicModule,
   ],
   controllers: [AppController],
   providers: [AppService],

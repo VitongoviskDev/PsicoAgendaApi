@@ -8,7 +8,7 @@
    "scripts": {
       "build": "nest build",
       "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-      "start": "ts-node src/index.ts",
+      "start": "nest start",
       "start:dev": "nest start --watch",
       "start:debug": "nest start --debug --watch",
       "start:prod": "node dist/src/main.js",
@@ -18,7 +18,7 @@
       "test:cov": "jest --coverage",
       "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
       "test:e2e": "jest --config ./test/jest-e2e.json",
-      "typeorm": "typeorm-ts-node-commonjs -d typeorm.config.ts",
+      "typeorm": "cross-env NODE_OPTIONS=--require=tsconfig-paths/register typeorm-ts-node-commonjs -d typeorm.config.ts",
       "migration:generate": "npm run typeorm -- migration:generate",
       "migration:run": "npm run typeorm -- migration:run",
       "migration:revert": "npm run typeorm -- migration:revert"
@@ -42,6 +42,7 @@
       "reflect-metadata": "^0.2.2",
       "rxjs": "^7.8.1",
       "typeorm": "^0.3.27",
+      "typeorm-naming-strategies": "^4.1.0",
       "typeorm-ts-node-commonjs": "^0.3.20"
    },
    "devDependencies": {
@@ -56,6 +57,7 @@
       "@types/multer": "^2.0.0",
       "@types/node": "^22.10.7",
       "@types/supertest": "^6.0.2",
+      "cross-env": "^10.1.0",
       "eslint": "^9.18.0",
       "eslint-config-prettier": "^10.0.1",
       "eslint-plugin-prettier": "^5.2.2",

@@ -26,6 +26,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
                 {
                     message,
                     error: res,
+                    status,
                 } as ApiResponse
             );
         }
@@ -39,6 +40,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
                 {
                     message: 'Erro interno do servidor',
                     error: exception?.message || exception,
+                    status: HttpStatus.INTERNAL_SERVER_ERROR,
                 } as ApiResponse
             );
     }

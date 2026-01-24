@@ -4,6 +4,7 @@ import { RegisterOwnerDto } from '@/auth/dto/register-owner.dto';
 import { ApiResponse } from '@/utils/responses/ApiResponse';
 import { LoginDto } from '@/auth/dto/login.dto';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { ResponseBuilder } from '@/utils/ResponseBuilder';
 
 @Controller('auth')
 export class AuthController {
