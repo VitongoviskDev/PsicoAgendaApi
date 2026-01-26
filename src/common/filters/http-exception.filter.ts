@@ -3,45 +3,73 @@ import {
     Catch,
     ArgumentsHost,
     HttpException,
-    HttpStatus,
+    ForbiddenException,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiResponse } from '@/utils/responses/ApiResponse';
+import { FieldError, FormValidationException } from '../exceptions/form-validation.exception';
+import { stat } from 'fs';
 
-@Catch()
+@Catch(HttpException)
 export class GlobalHttpExceptionFilter implements ExceptionFilter {
-    catch(exception: any, host: ArgumentsHost) {
+    catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
+        const status = exception.getStatus();
 
-        // Se for erro HTTP padrão do Nest
-        if (exception instanceof HttpException) {
-            const status = exception.getStatus();
-            const res: any = exception.getResponse();
+        // Pegamos a "payload" original
+        const res = exception.getResponse();
 
-            const message =
-                typeof res === 'string' ? res : res?.message || 'Erro inesperado';
+        if (exception instanceof ForbiddenException) {
 
-            return response.status(status).json(
-                {
-                    message,
-                    error: res,
-                    status,
-                } as ApiResponse
-            );
+            const payload = res as ForbiddenExceptionPayload;
+            return response.status(status).json({
+                message: payload.message ?? "Acesso negado",
+                error: payload.data ?? null,
+                status: 403
+            } as ApiResponse);
+
+        } else if (exception instanceof UnauthorizedException) {
+
+            return response.status(status).json({
+                message: "Credenciais inválidas",
+                error: res,
+            } as ApiResponse);
+
+        } else if (exception instanceof FormValidationException) {
+
+            const payload = res as FormValidationExceptionPayload;
+            return response.status(status).json({
+                message: payload.message,
+                errors: payload.errors,
+                status: 422
+            } as ApiResponse);
+
+        } else if (typeof res === 'string') {
+
+            return response.status(status).json({
+                message: res,
+                status
+            } as ApiResponse);
+
+        } else if (typeof res === 'object') {
+
+            return response.status(status).json({
+                message: "Erro inesperado",
+                error: res,
+                status
+            } as ApiResponse);
+
         }
-
-        // Erro desconhecido (não HttpException)
-        console.error('Unhandled exception:', exception);
-
-        return response
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .json(
-                {
-                    message: 'Erro interno do servidor',
-                    error: exception?.message || exception,
-                    status: HttpStatus.INTERNAL_SERVER_ERROR,
-                } as ApiResponse
-            );
     }
+}
+
+export interface ForbiddenExceptionPayload {
+    message: string;
+    data?: any;
+}
+export interface FormValidationExceptionPayload {
+    message: string;
+    errors: FieldError[];
 }

@@ -1,18 +1,17 @@
-import { Body, Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from '@/auth/auth.service';
-import { RegisterOwnerDto } from '@/auth/dto/register-owner.dto';
-import { ApiResponse } from '@/utils/responses/ApiResponse';
 import { LoginDto } from '@/auth/dto/login.dto';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { ResponseBuilder } from '@/utils/ResponseBuilder';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { RegisterUserDto } from '@/users/dto/register-user.dto';
+import { ApiResponse } from '@/utils/responses/ApiResponse';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) { }
 
-    @Post('register-owner')
-    async registerOwner(@Body() dto: RegisterOwnerDto) {
-        const data = await this.authService.registerOwner(dto)
+    @Post('register')
+    async register(@Body() body: RegisterUserDto) {
+        const data = await this.authService.register(body)
         const response: ApiResponse = {
             message: 'Owner registrado com sucesso',
             data: data,

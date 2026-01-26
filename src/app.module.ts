@@ -8,6 +8,11 @@ import { AuthModule } from '@/auth/auth.module';
 import { UsersModule } from '@/users/users.module';
 import { UserClinicModule } from './user-clinic/user-clinic.module';
 import { ClinicsModule } from './clinics/clinics.module';
+import { dataSourceOptions } from './data-source';
+import { PatientProfileModule } from './patient-profile/patient-profile.module';
+import { StaffProfileModule } from './staff-profile/staff-profile.module';
+import { PsychologistProfileModule } from './psychologist-profile/psychologist-profile.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -16,15 +21,11 @@ import { ClinicsModule } from './clinics/clinics.module';
     }),
 
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
+      ...dataSourceOptions,
       autoLoadEntities: true,
       synchronize: false,
       migrationsRun: false,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-
+      
       extra: {
         ssl: {
           rejectUnauthorized: false,
@@ -38,6 +39,10 @@ import { ClinicsModule } from './clinics/clinics.module';
     UsersModule,
     ClinicsModule,
     UserClinicModule,
+    PatientProfileModule,
+    StaffProfileModule,
+    PsychologistProfileModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

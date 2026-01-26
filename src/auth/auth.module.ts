@@ -4,17 +4,18 @@ import { AuthController } from '@/auth/auth.controller';
 import { UsersModule } from '@/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ClinicsModule } from '@/clinics/clinics.module';
-import { JwtStrategy } from '@/auth/jwt.strategy';
+import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
 import { PsychologistProfileModule } from '@/psychologist-profile/psychologist-profile.module';
-import { ClinicStaffModule } from '@/clinic-staff/clinic-staff.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserClinicModule } from '@/user-clinic/user-clinic.module';
 
 @Module({
   imports: [
     UsersModule,
     ClinicsModule,
-    ClinicStaffModule,
+    UserClinicModule,
     PsychologistProfileModule,
+
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

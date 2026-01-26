@@ -1,15 +1,17 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { MatchValidator } from '@/common/validators/match.validator';
+import { IsEmail, IsNotEmpty, MinLength, Validate } from 'class-validator';
 
 export class RegisterUserDto {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'O nome é obrigatório.' })
   name: string;
 
   @IsEmail()
   email: string;
 
-  @MinLength(6)
+  @MinLength(8)
   password: string;
 
-  @MinLength(6)
+  @IsNotEmpty()
+  @Validate(MatchValidator, ['password'])
   confirm_password: string;
 }

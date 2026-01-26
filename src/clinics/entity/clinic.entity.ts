@@ -2,10 +2,11 @@ import { AuditableEntity } from '@/common/entities/auditable.entity';
 import { UserClinic } from '@/user-clinic/entities/user-clinic.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum ClinicStatus {
-    PENDING_SETUP = 'PENDING_SETUP',
-    ACTIVE = 'ACTIVE',
-}
+export const CLINIC_STATUS_ENUM = {
+    PENDING_SETUP: 'PENDING_SETUP',
+    ACTIVE: 'ACTIVE',
+} as const;
+export type ClinicStatus = typeof CLINIC_STATUS_ENUM[keyof typeof CLINIC_STATUS_ENUM];
 
 // users/entities/user.entity.ts
 @Entity('clinics')
@@ -27,12 +28,12 @@ export class Clinic extends AuditableEntity {
 
     @Column({
         type: 'enum',
-        enum: ClinicStatus,
+        enum: CLINIC_STATUS_ENUM,
         enumName: 'clinics_status_enum',
-        default: ClinicStatus.PENDING_SETUP,
+        default: CLINIC_STATUS_ENUM.PENDING_SETUP,
     })
     status: ClinicStatus;
 
     @OneToMany(() => UserClinic, (userClinic) => userClinic.user)
-    userClinics: UserClinic[]; s
+    userClinics: UserClinic[];
 }

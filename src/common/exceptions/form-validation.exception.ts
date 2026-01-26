@@ -1,15 +1,16 @@
 // src/common/exceptions/form-validation.exception.ts
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, UnprocessableEntityException } from '@nestjs/common';
+import { stat } from 'fs';
 
 export interface FieldError {
     field: string;
     error: string;
 }
 
-export class FormValidationException extends BadRequestException {
+export class FormValidationException extends UnprocessableEntityException {
     constructor(errors: FieldError[]) {
         super({
-            message: 'Erro de invalidez',
+            message: 'Validation failed',
             errors,
         });
     }

@@ -1,13 +1,15 @@
+import { PsychologistProfile } from "@/psychologist-profile/entities/psychologist-profile.entity";
 import { UserClinic } from "@/user-clinic/entities/user-clinic.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
-export enum UserStatus {
-    PENDING_REGISTRATION = 'PENDING_REGISTRATION',
-    ACTIVE = 'ACTIVE',
-    DISABLED = 'DISABLED',
-    BLOCKED = 'BLOCKED',
-    INVITED = 'INVITED',
-}
+export const USER_STATUS_ENUM = {
+    PENDING_EMAIL_VERIFICATION: 'PENDING_EMAIL_VERIFICATION',
+    ACTIVE: 'ACTIVE',
+    DISABLED: 'DISABLED',
+    BLOCKED: 'BLOCKED',
+} as const;
+
+type UserStatus = typeof USER_STATUS_ENUM[keyof typeof USER_STATUS_ENUM];
 
 // users/entities/user.entity.ts
 @Entity('users')
@@ -38,12 +40,18 @@ export class User {
 
     @Column({
         type: 'enum',
-        enum: UserStatus,
+        enum: USER_STATUS_ENUM,
         enumName: 'user_status_enum',
-        default: UserStatus.PENDING_REGISTRATION,
+        default: USER_STATUS_ENUM.PENDING_EMAIL_VERIFICATION,
     })
     status: UserStatus;
 
     @OneToMany(() => UserClinic, (userClinic) => userClinic.user)
     userClinics: UserClinic[];
+
+    @OneToOne(() => PsychologistProfile, (psychologistProfile) => psychologistProfile.user, {
+        cascade: true,
+        nullable: true,
+    })
+    psychologistProfile: PsychologistProfile;
 }

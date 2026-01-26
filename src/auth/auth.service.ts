@@ -1,16 +1,14 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { LoginDto } from '@/auth/dto/login.dto';
+import { PROFILE_STATUS_ENUM } from '@/common/enums/profile-status.enum';
+import { ForbiddenExceptionPayload } from '@/common/filters/http-exception.filter';
+import { UserClinicService } from '@/user-clinic/user-clinic.service';
+import { RegisterUserDto } from '@/users/dto/register-user.dto';
+import { User, USER_STATUS_ENUM } from '@/users/entities/user.entity';
+import { UsersService } from '@/users/users.service';
+import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { ClinicsService } from '@/clinics/clinics.service';
-import { Clinic, ClinicStatus } from '@/clinics/entity/clinic.entity';
 import { DataSource } from 'typeorm';
-import { User, UserStatus } from '@/users/entities/user.entity';
-import { UsersService } from '@/users/users.service';
-import { LoginDto } from '@/auth/dto/login.dto';
-import { RegisterOwnerDto } from '@/auth/dto/register-owner.dto';
-import { ClinicStaffService } from '@/clinic-staff/clinic-staff.service';
-import { ClinicStaff, StaffRole } from '@/clinic-staff/entity/clinic-staf.entity';
-import { FieldError, FormValidationException } from '@/common/exceptions/form-validation.exception';
 
 @Injectable()
 export class AuthService {
@@ -18,121 +16,95 @@ export class AuthService {
         private readonly dataSource: DataSource,
 
         private usersService: UsersService,
-        private clinicsService: ClinicsService,
-        private clinicStaffService: ClinicStaffService,
         private jwtService: JwtService,
+        private userClinicService: UserClinicService,
     ) { }
 
-    async registerOwner(dto: RegisterOwnerDto) {
+    async register(dto: RegisterUserDto) {
         return this.dataSource.transaction(async (manager) => {
 
-
-            // VALIDAÇÃO DE ERRO DE ENTRADA
-            const formFieldsErrors: FieldError[] = [];
-
-            if (dto.user.password.length < 8)
-                formFieldsErrors.push({ field: 'password', error: 'Senha deve ter no mínimo 8 caracteres' })
-
-            if (dto.user.password !== dto.user.confirm_password)
-                formFieldsErrors.push({ field: "confirm_password", error: "As senhas digitadas não conferem" })
-
-            if (formFieldsErrors.length > 0)
-                throw new FormValidationException(formFieldsErrors);
-
-
             const existingUser = await manager.findOne(User, {
-                where: { email: dto.user.email },
+                where: { email: dto.email },
             });
 
             if (existingUser) {
                 throw new ConflictException('E-mail já está em uso.');
             }
 
-            const clinic = await manager.create(Clinic, {
-                name: 'Minha clínica',
-                status: ClinicStatus.PENDING_SETUP,
-            });
-
-            await manager.save(clinic);
-
-            const hashedPassword = await bcrypt.hash(dto.user.password, 10);
+            const hashedPassword = await bcrypt.hash(dto.password, 10);
 
             const user = manager.create(User, {
-                name: dto.user.name,
-                email: dto.user.email,
+                name: dto.name,
+                email: dto.email,
                 password: hashedPassword,
-                status: UserStatus.PENDING_REGISTRATION,
-                lastClinicId: clinic.id,
+                status: USER_STATUS_ENUM.PENDING_EMAIL_VERIFICATION,
             });
 
             await manager.save(user);
-
-
-            const staff = manager.create(ClinicStaff, {
-                user: user,
-                clinic: clinic,
-                role: StaffRole.OWNER,
-            });
-
-            await manager.save(staff);
 
             const payload = { sub: user.id };
             const access_token = this.jwtService.sign(payload);
 
             return {
                 user,
-                currentClinic: clinic,
-                clinics: [clinic],
                 access_token,
             };
         });
     }
 
 
-
     async login(dto: LoginDto) {
         const { email, password } = dto;
 
-        // 1️⃣ Busca usuário + profiles globais
-        const user = await this.usersService.findByEmailWithProfiles(email);
+        const user = await this.usersService.findByEmail(email);
+
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        // 2️⃣ Valida senha
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        // 3️⃣ Busca vínculos administrativos (ClinicStaff)
-        const staffRelations = await this.clinicStaffService.findByUser({ userId: user.id });
+        if (user.status === USER_STATUS_ENUM.PENDING_EMAIL_VERIFICATION) {
+            const verificationToken = this.generateEmailVerificationToken(user.id);
 
-        if (!staffRelations || staffRelations && staffRelations.length === 0) {
-            throw new UnauthorizedException(
-                'Usuário não possui vínculo com nenhuma clínica',
-            );
+            const exceptionPayload: ForbiddenExceptionPayload = {
+                message: 'Email ainda não verificado',
+                data: {
+                    status: 'PENDING_EMAIL_VERIFICATION',
+                    verification_token: verificationToken,
+                    user: {
+                        id: user.id,
+                        email: user.email,
+                        name: user.name,
+                    },
+                }
+            };
+            throw new ForbiddenException(exceptionPayload);
         }
 
-        // 4️⃣ Resolve clínica ativa
-        const activeStaff =
-            staffRelations.find(r => r.clinic.id === user.lastClinicId) ??
-            staffRelations[0];
+        const clinics = user.userClinics?.map(uc => uc.clinic) ?? [];
 
-        // 5️⃣ Atualiza última clínica se necessário
-        if (user.lastClinicId !== activeStaff.clinic.id) {
-            await this.usersService.setLastClinic(user.id, activeStaff.clinic.id);
-        }
+        const userClinic = user.currentUserClinic ?? null;
 
-        // 6️⃣ Lista de clínicas (admin context)
-        const clinics = staffRelations.map(r => ({
-            id: r.clinic.id,
-            name: r.clinic.name,
-            status: r.clinic.status,
-            staffRole: r.role, // OWNER | ADMIN | EMPLOYEE
-        }));
+        const currentClinic = user.currentUserClinic?.clinic ?? null;
+        let userProfiles = userClinic != null ? {
+            staff: userClinic?.staffProfile?.status === PROFILE_STATUS_ENUM.ACTIVE ? {
+                role: userClinic.staffProfile.role,
+            } : null,
 
-        // 7️⃣ Usuário (com flags de profile)
+            patient: userClinic?.patientProfile.status === PROFILE_STATUS_ENUM.ACTIVE ? {
+                // notes: userClinic.patientProfile.notes ?? null,
+            } : null,
+
+            psychologist: user?.psychologistProfile?.status === PROFILE_STATUS_ENUM.ACTIVE ? {
+                crp: user.psychologistProfile.crp,
+                // specialty: user.psychologistProfile.specialty ?? null,
+            } : null,
+        } : null;
+
         const userResponse = {
             id: user?.id,
             name: user?.name,
@@ -141,38 +113,11 @@ export class AuthService {
             birthDate: user?.birthDate,
             cpf: user?.cpf,
             status: user?.status,
-            profiles: {
-                staff: !!activeStaff && !!user?.staffProfile ? {
-                    active: user?.staffProfile.active,
-                    role: activeStaff.role,
-                } : null,
-                psychologist: !!user?.psychologistProfile ? {
-                    active: user.psychologistProfile.active,
-                    crp: user.psychologistProfile.crp,
-                    specialty: user.psychologistProfile.specialty ?? null,
-                } : null,
-                patient: !!user?.patientProfile ? {
-                    notes: user.patientProfile.notes ?? null,
-                } : null,
-            },
+            profiles: userProfiles
 
         };
 
-        // 8️⃣ Clínica ativa
-        const currentClinic = {
-            id: activeStaff.clinic.id,
-            name: activeStaff.clinic.name,
-            status: activeStaff.clinic.status,
-
-            staffRole: activeStaff.role,
-        };
-
-        // 9️⃣ Token
-        const payload = {
-            sub: user.id,
-            clinicId: activeStaff.clinic.id,
-        };
-        const access_token = this.jwtService.sign(payload);
+        const access_token = this.generateAccessToken(user.id);
 
         return {
             user: userResponse,
@@ -182,4 +127,22 @@ export class AuthService {
         };
     }
 
+    private generateAccessToken(user_id: User['id']): string {
+        const payload = { sub: user_id };
+        return this.jwtService.sign(payload);
+    }
+
+    private generateEmailVerificationToken(user_id: User['id']): string {
+        return this.jwtService.sign(
+            {
+                sub: user_id,
+                purpose: 'email_verification',
+            },
+            {
+                expiresIn: '15m',
+            },
+        );
+    }
+
 }
+

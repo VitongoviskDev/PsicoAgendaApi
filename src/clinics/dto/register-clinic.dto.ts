@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ClinicStatus } from '@/clinics/entity/clinic.entity';
+import { CLINIC_STATUS_ENUM, type ClinicStatus } from '@/clinics/entity/clinic.entity';
 
 export class RegisterClinicDto {
     @IsString()
@@ -15,6 +15,6 @@ export class RegisterClinicDto {
     phone?: string;
 
     @IsOptional()
-    @IsEnum(ClinicStatus)
+    @IsEnum(CLINIC_STATUS_ENUM)
     status?: ClinicStatus;
 }
