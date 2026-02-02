@@ -13,6 +13,7 @@ import { PatientProfileModule } from './patient-profile/patient-profile.module';
 import { StaffProfileModule } from './staff-profile/staff-profile.module';
 import { PsychologistProfileModule } from './psychologist-profile/psychologist-profile.module';
 import { MailModule } from './mail/mail.module';
+import { VerificationCodeModule } from './verification-code/verification-code.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { MailModule } from './mail/mail.module';
     StaffProfileModule,
     PsychologistProfileModule,
     MailModule,
+    VerificationCodeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

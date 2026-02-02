@@ -19,4 +19,8 @@ export class UsersService {
     async findByEmail(email: string) {
         return this.userRepo.findOneBy({ email: email });;
     }
+
+    async updateStatus(id: User['id'], status: User['status']) {
+        return this.userRepo.update({ id: id }, { status: status });
+    }
 }

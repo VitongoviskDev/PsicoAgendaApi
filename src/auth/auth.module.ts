@@ -8,6 +8,8 @@ import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
 import { PsychologistProfileModule } from '@/psychologist-profile/psychologist-profile.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserClinicModule } from '@/user-clinic/user-clinic.module';
+import { VerificationCodeModule } from '@/verification-code/verification-code.module';
+import { MailModule } from '@/mail/mail.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { UserClinicModule } from '@/user-clinic/user-clinic.module';
     ClinicsModule,
     UserClinicModule,
     PsychologistProfileModule,
+    VerificationCodeModule,
+    MailModule,
 
     JwtModule.registerAsync({
       imports: [ConfigModule],

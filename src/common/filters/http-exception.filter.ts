@@ -21,55 +21,37 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         // Pegamos a "payload" original
         const res = exception.getResponse();
 
-        if (exception instanceof ForbiddenException) {
-
-            const payload = res as ForbiddenExceptionPayload;
-            return response.status(status).json({
-                message: payload.message ?? "Acesso negado",
-                error: payload.data ?? null,
-                status: 403
-            } as ApiResponse);
-
-        } else if (exception instanceof UnauthorizedException) {
-
-            return response.status(status).json({
-                message: "Credenciais inválidas",
-                error: res,
-            } as ApiResponse);
-
-        } else if (exception instanceof FormValidationException) {
+        if (exception instanceof FormValidationException) {
 
             const payload = res as FormValidationExceptionPayload;
             return response.status(status).json({
                 message: payload.message,
                 errors: payload.errors,
-                status: 422
-            } as ApiResponse);
-
-        } else if (typeof res === 'string') {
-
-            return response.status(status).json({
-                message: res,
-                status
+                status: status
             } as ApiResponse);
 
         } else if (typeof res === 'object') {
-
+            const payload = res as DefaultExceptioPayload;
             return response.status(status).json({
-                message: "Erro inesperado",
-                error: res,
-                status
+                message: payload.message ?? "Erro inesperado",
+                error: payload.data ?? null,
+                status: status
             } as ApiResponse);
 
+        } else if (typeof res === 'string') {
+            return response.status(status).json({
+                message: res,
+                status: status
+            } as ApiResponse);
         }
     }
 }
 
-export interface ForbiddenExceptionPayload {
-    message: string;
-    data?: any;
-}
 export interface FormValidationExceptionPayload {
     message: string;
     errors: FieldError[];
+}
+export interface DefaultExceptioPayload {
+    message: string;
+    data?: any;
 }

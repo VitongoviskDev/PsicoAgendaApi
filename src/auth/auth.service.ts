@@ -1,11 +1,14 @@
 import { LoginDto } from '@/auth/dto/login.dto';
 import { PROFILE_STATUS_ENUM } from '@/common/enums/profile-status.enum';
-import { ForbiddenExceptionPayload } from '@/common/filters/http-exception.filter';
+import { DefaultExceptioPayload } from '@/common/filters/http-exception.filter';
+import { MailService } from '@/mail/mail.service';
 import { UserClinicService } from '@/user-clinic/user-clinic.service';
 import { RegisterUserDto } from '@/users/dto/register-user.dto';
 import { User, USER_STATUS_ENUM } from '@/users/entities/user.entity';
 import { UsersService } from '@/users/users.service';
-import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { VERIFICATION_CODE_TYPE_ENUM } from '@/verification-code/entities/verification-code.entity';
+import { VerificationCodeService } from '@/verification-code/verification-code.service';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { DataSource } from 'typeorm';
@@ -17,7 +20,8 @@ export class AuthService {
 
         private usersService: UsersService,
         private jwtService: JwtService,
-        private userClinicService: UserClinicService,
+        private verificationCodeService: VerificationCodeService,
+        private mailService: MailService,
     ) { }
 
     async register(dto: RegisterUserDto) {
@@ -44,6 +48,9 @@ export class AuthService {
 
             const payload = { sub: user.id };
             const access_token = this.jwtService.sign(payload);
+            const { code } = await this.verificationCodeService.generateEmailVerificationCode(user.id);
+
+            this.mailService.sendVerificationEmail(user.email, user.name, code)
 
             return {
                 user,
@@ -57,7 +64,6 @@ export class AuthService {
         const { email, password } = dto;
 
         const user = await this.usersService.findByEmail(email);
-
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');
         }
@@ -67,29 +73,19 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        if (user.status === USER_STATUS_ENUM.PENDING_EMAIL_VERIFICATION) {
-            const verificationToken = this.generateEmailVerificationToken(user.id);
+        const access_token = this.generateAccessToken(user.id);
 
-            const exceptionPayload: ForbiddenExceptionPayload = {
-                message: 'Email ainda não verificado',
-                data: {
-                    status: 'PENDING_EMAIL_VERIFICATION',
-                    verification_token: verificationToken,
-                    user: {
-                        id: user.id,
-                        email: user.email,
-                        name: user.name,
-                    },
-                }
+        if (user.status === USER_STATUS_ENUM.PENDING_EMAIL_VERIFICATION) {
+            return {
+                user: user,
+                access_token,
             };
-            throw new ForbiddenException(exceptionPayload);
         }
 
         const clinics = user.userClinics?.map(uc => uc.clinic) ?? [];
-
         const userClinic = user.currentUserClinic ?? null;
+        const currentClinic = userClinic?.clinic ?? null;
 
-        const currentClinic = user.currentUserClinic?.clinic ?? null;
         let userProfiles = userClinic != null ? {
             staff: userClinic?.staffProfile?.status === PROFILE_STATUS_ENUM.ACTIVE ? {
                 role: userClinic.staffProfile.role,
@@ -106,43 +102,58 @@ export class AuthService {
         } : null;
 
         const userResponse = {
-            id: user?.id,
-            name: user?.name,
-            email: user?.email,
-            phone: user?.phone,
-            birthDate: user?.birthDate,
-            cpf: user?.cpf,
-            status: user?.status,
+            ...user,
             profiles: userProfiles
-
         };
-
-        const access_token = this.generateAccessToken(user.id);
 
         return {
             user: userResponse,
-            currentClinic,
+            current_clinic: currentClinic,
             clinics,
             access_token,
         };
     }
 
+    async resendVerificationCode(userId: string) {
+        const user = await this.usersService.findById(userId)
+
+        if (!user) {
+            throw new NotFoundException('Usuário não encontrado')
+        }
+
+        if (user.status !== USER_STATUS_ENUM.PENDING_EMAIL_VERIFICATION) {
+            throw new BadRequestException('Email já verificado')
+        }
+
+        const verificationCode = await this.verificationCodeService.generateEmailVerificationCode(user.id)
+
+        await this.mailService.sendVerificationEmail(
+            user.email,
+            user.name,
+            verificationCode.code,
+        );
+
+        return {
+            can: verificationCode.can
+        }
+    }
+
+    async verifyUserEmail(userId: string, code: string) {
+        await this.verificationCodeService.verifyUserEmail(userId, code);
+
+        const user = await this.usersService.findById(userId)
+
+        if (!user) {
+            throw new NotFoundException('Usuário não encontrado')
+        }
+
+        await this.usersService.updateStatus(user.id, USER_STATUS_ENUM.PENDING_REGISTARTION);
+    }
+
+
     private generateAccessToken(user_id: User['id']): string {
         const payload = { sub: user_id };
         return this.jwtService.sign(payload);
     }
-
-    private generateEmailVerificationToken(user_id: User['id']): string {
-        return this.jwtService.sign(
-            {
-                sub: user_id,
-                purpose: 'email_verification',
-            },
-            {
-                expiresIn: '15m',
-            },
-        );
-    }
-
 }
 

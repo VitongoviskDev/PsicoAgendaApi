@@ -3,6 +3,7 @@ import { UserClinic } from "@/user-clinic/entities/user-clinic.entity";
 import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export const USER_STATUS_ENUM = {
+    PENDING_REGISTARTION: 'PENDING_REGISTARTION',
     PENDING_EMAIL_VERIFICATION: 'PENDING_EMAIL_VERIFICATION',
     ACTIVE: 'ACTIVE',
     DISABLED: 'DISABLED',
