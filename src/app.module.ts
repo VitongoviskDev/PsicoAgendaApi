@@ -8,7 +8,7 @@ import { AuthModule } from '@/auth/auth.module';
 import { UsersModule } from '@/users/users.module';
 import { UserClinicModule } from './user-clinic/user-clinic.module';
 import { ClinicsModule } from './clinics/clinics.module';
-import { dataSourceOptions } from './data-source';
+import { dataSourceOptions } from './database/data-source';
 import { PatientProfileModule } from './patient-profile/patient-profile.module';
 import { StaffProfileModule } from './staff-profile/staff-profile.module';
 import { PsychologistProfileModule } from './psychologist-profile/psychologist-profile.module';
@@ -26,17 +26,9 @@ import { VerificationCodeModule } from './verification-code/verification-code.mo
       autoLoadEntities: true,
       synchronize: false,
       migrationsRun: false,
-      
-      extra: {
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      },
-
     }),
 
     AuthModule,
-
     UsersModule,
     ClinicsModule,
     UserClinicModule,
