@@ -24,7 +24,7 @@ export class CompleteUserProfileDto {
 
     @Transform(({ value }) => value === 'true')
     @IsBoolean()
-    actAsPsychologist: boolean;
+    isPsychologist: boolean;
 
     @Transform(({ value }) =>
         typeof value === 'string'

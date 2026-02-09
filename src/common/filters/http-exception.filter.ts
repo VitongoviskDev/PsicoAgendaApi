@@ -26,7 +26,9 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
             const payload = res as FormValidationExceptionPayload;
             return response.status(status).json({
                 message: payload.message,
-                errors: payload.errors,
+                errors: {
+                    fields: payload.errors
+                },
                 status: status
             } as ApiResponse);
 

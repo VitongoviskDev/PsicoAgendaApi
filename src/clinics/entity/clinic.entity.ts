@@ -1,5 +1,6 @@
 import { AuditableEntity } from '@/common/entities/auditable.entity';
 import { UserClinic } from '@/user-clinic/entities/user-clinic.entity';
+import { ClinicResponsibleTechnician } from '@/clinic-responsible-technician/entities/clinic-responsible-technician.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export const CLINIC_STATUS_ENUM = {
@@ -36,4 +37,7 @@ export class Clinic extends AuditableEntity {
 
     @OneToMany(() => UserClinic, (userClinic) => userClinic.user)
     userClinics: UserClinic[];
+
+    @OneToMany(() => ClinicResponsibleTechnician, (rt) => rt.clinic)
+    responsibleTechnicians: ClinicResponsibleTechnician[];
 }

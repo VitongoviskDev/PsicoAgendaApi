@@ -147,7 +147,7 @@ export class AuthService {
             throw new NotFoundException('Usuário não encontrado')
         }
 
-        await this.usersService.updateStatus(user.id, USER_STATUS_ENUM.PENDING_REGISTARTION);
+        await this.usersService.updateStatus(user.id, USER_STATUS_ENUM.PENDING_REGISTRATION);
     }
 
 

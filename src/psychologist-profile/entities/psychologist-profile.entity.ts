@@ -1,7 +1,8 @@
 import { AuditableEntity } from "@/common/entities/auditable.entity";
 import { PROFILE_STATUS_ENUM, type ProfileStatus } from "@/common/enums/profile-status.enum";
 import { User } from "@/users/entities/user.entity";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { ClinicResponsibleTechnician } from "@/clinic-responsible-technician/entities/clinic-responsible-technician.entity";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity('psychologist_profiles')
 @Unique(['user'])
@@ -23,4 +24,7 @@ export class PsychologistProfile extends AuditableEntity {
 
     @Column({ unique: true })
     crp: string;
+
+    @OneToMany(() => ClinicResponsibleTechnician, (rt) => rt.psychologistProfile)
+    responsibleTechnicians: ClinicResponsibleTechnician[];
 }

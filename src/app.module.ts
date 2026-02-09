@@ -14,6 +14,7 @@ import { StaffProfileModule } from './staff-profile/staff-profile.module';
 import { PsychologistProfileModule } from './psychologist-profile/psychologist-profile.module';
 import { MailModule } from './mail/mail.module';
 import { VerificationCodeModule } from './verification-code/verification-code.module';
+import { ClinicResponsibleTechnicianModule } from './clinic-responsible-technician/clinic-responsible-technician.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { VerificationCodeModule } from './verification-code/verification-code.mo
     PsychologistProfileModule,
     MailModule,
     VerificationCodeModule,
+    ClinicResponsibleTechnicianModule,
   ],
   controllers: [AppController],
   providers: [AppService],
