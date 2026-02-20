@@ -24,7 +24,12 @@ import { join } from 'path'
           from: config.get<string>('MAIL_FROM'),
         },
         template: {
-          dir: join(__dirname, 'templates'),
+          dir: join(
+            process.cwd(),
+            process.env.NODE_ENV === 'production'
+              ? 'dist/mail/templates'
+              : 'src/mail/templates',
+          ),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,

@@ -1,11 +1,11 @@
 import { AuditableEntity } from '@/common/entities/auditable.entity';
 import { UserClinic } from '@/user-clinic/entities/user-clinic.entity';
-import { ClinicResponsibleTechnician } from '@/clinic-responsible-technician/entities/clinic-responsible-technician.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export const CLINIC_STATUS_ENUM = {
-    PENDING_SETUP: 'PENDING_SETUP',
+    DRAFT: 'DRAFT',
     ACTIVE: 'ACTIVE',
+    SUSPENDED: 'SUSPENDED',
 } as const;
 export type ClinicStatus = typeof CLINIC_STATUS_ENUM[keyof typeof CLINIC_STATUS_ENUM];
 
@@ -25,19 +25,19 @@ export class Clinic extends AuditableEntity {
     cnpj: string;
 
     @Column({ nullable: true })
+    crp: string;
+
+    @Column({ nullable: true })
     openedAt: Date;
 
     @Column({
         type: 'enum',
         enum: CLINIC_STATUS_ENUM,
         enumName: 'clinics_status_enum',
-        default: CLINIC_STATUS_ENUM.PENDING_SETUP,
+        default: CLINIC_STATUS_ENUM.DRAFT,
     })
     status: ClinicStatus;
 
-    @OneToMany(() => UserClinic, (userClinic) => userClinic.user)
+    @OneToMany(() => UserClinic, (userClinic) => userClinic.clinic)
     userClinics: UserClinic[];
-
-    @OneToMany(() => ClinicResponsibleTechnician, (rt) => rt.clinic)
-    responsibleTechnicians: ClinicResponsibleTechnician[];
 }

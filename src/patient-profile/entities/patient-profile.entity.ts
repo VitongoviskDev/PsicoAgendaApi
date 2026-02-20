@@ -17,6 +17,8 @@ export class PatientProfile extends AuditableEntity {
     status: ProfileStatus;
 
     @OneToOne(() => UserClinic, (userClinic) => userClinic.patientProfile)
-    @JoinColumn()
-    userClinics: UserClinic[];
+    userClinic: UserClinic;
+
+    @Column({ nullable: true })
+    code: string; // Internal clinic code for the patient
 }

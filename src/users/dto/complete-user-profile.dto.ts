@@ -22,7 +22,10 @@ export class CompleteUserProfileDto {
     @IsString()
     phone: string;
 
-    @Transform(({ value }) => value === 'true')
+    @Transform(({ value }) => {
+        if (typeof value === 'boolean') return value;
+        return value === 'true';
+    })
     @IsBoolean()
     isPsychologist: boolean;
 

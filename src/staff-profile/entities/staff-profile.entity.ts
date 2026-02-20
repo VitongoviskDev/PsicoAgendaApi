@@ -32,6 +32,5 @@ export class StaffProfile extends AuditableEntity {
     status: ProfileStatus;
 
     @OneToOne(() => UserClinic, (userClinic) => userClinic.staffProfile)
-    @JoinColumn()
-    userClinics: UserClinic[];
+    userClinic: UserClinic;
 }

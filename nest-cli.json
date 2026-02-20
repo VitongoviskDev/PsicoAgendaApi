@@ -5,10 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      {
-        "include": "mail/templates/**/*",
-        "outDir": "dist/src"
-      }
+      "mail/templates/**/*"
     ],
     "watchAssets": true
   }

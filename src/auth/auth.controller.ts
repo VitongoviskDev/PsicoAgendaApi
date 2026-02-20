@@ -49,10 +49,10 @@ export class AuthController {
         @CurrentUser() user: User,
         @Body() body: { code: string },
     ) {
-        await this.authService.verifyUserEmail(user.id, body.code);
+        const data = await this.authService.verifyUserEmail(user.id, body.code);
         const response: ApiResponse = {
             message: 'Email verificado com sucesso!',
-            data: { verified: true },
+            data: data,
             status: 200
         }
         return response;

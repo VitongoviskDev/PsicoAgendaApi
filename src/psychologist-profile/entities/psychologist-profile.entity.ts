@@ -1,11 +1,10 @@
 import { AuditableEntity } from "@/common/entities/auditable.entity";
 import { PROFILE_STATUS_ENUM, type ProfileStatus } from "@/common/enums/profile-status.enum";
+import { UserClinic } from "@/user-clinic/entities/user-clinic.entity";
 import { User } from "@/users/entities/user.entity";
-import { ClinicResponsibleTechnician } from "@/clinic-responsible-technician/entities/clinic-responsible-technician.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('psychologist_profiles')
-@Unique(['user'])
 export class PsychologistProfile extends AuditableEntity {
 
     @PrimaryGeneratedColumn('uuid')
@@ -25,6 +24,6 @@ export class PsychologistProfile extends AuditableEntity {
     @Column({ unique: true })
     crp: string;
 
-    @OneToMany(() => ClinicResponsibleTechnician, (rt) => rt.psychologistProfile)
-    responsibleTechnicians: ClinicResponsibleTechnician[];
+    @OneToMany(() => UserClinic, (userClinic) => userClinic.psychologistProfile)
+    userClinics: UserClinic[];
 }

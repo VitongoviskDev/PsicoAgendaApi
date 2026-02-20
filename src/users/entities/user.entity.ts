@@ -1,10 +1,13 @@
 import { PsychologistProfile } from "@/psychologist-profile/entities/psychologist-profile.entity";
 import { UserClinic } from "@/user-clinic/entities/user-clinic.entity";
+import { Exclude } from "class-transformer";
 import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export const USER_STATUS_ENUM = {
     PENDING_REGISTRATION: 'PENDING_REGISTRATION',
     PENDING_EMAIL_VERIFICATION: 'PENDING_EMAIL_VERIFICATION',
+    INVITE_PENDING: 'INVITE_PENDING',
+    EMAIL_VERIFIED: 'EMAIL_VERIFIED',
     ACTIVE: 'ACTIVE',
     DISABLED: 'DISABLED',
     BLOCKED: 'BLOCKED',
@@ -24,6 +27,7 @@ export class User {
     @Column({ unique: true })
     email: string;
 
+    @Exclude()
     @Column()
     password: string;
 

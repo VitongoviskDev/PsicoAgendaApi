@@ -1,0 +1,42 @@
+Cadastro de Pacientes — Fluxo e Regras de Negócio
+1. Contexto da Aplicação
+    A aplicação é um sistema de gestão clínica voltado para:
+        Psicólogos autônomos
+        Donos/gestores de clínicas
+
+    O objetivo é centralizar a administração da clínica por meio de módulos como:
+        Pacientes
+        Agenda
+        Financeiro
+        Relatórios
+        Outros módulos futuros
+
+    Também existirá uma versão do aplicativo para pacientes, permitindo que eles:
+        Acompanhem consultas e agenda
+        Visualizem informações compartilhadas pela clínica
+        Solicitem reagendamentos
+        Solicitem pausas/férias de tratamento
+        Possivelmente acessar relatórios autorizados
+
+2. Princípios do Cadastro de Paciente
+    O fluxo de cadastro deve seguir estes princípios:
+    
+    Independência entre clínica e paciente
+        O cadastro do paciente pela clínica é soberano.
+        O funcionamento da agenda e da clínica não pode depender da adesão do paciente ao aplicativo.
+        Mesmo que o paciente nunca aceite o convite, a clínica continua operando normalmente.
+    Convite opcional ao paciente
+        Após o cadastro, o sistema deve permitir:
+            Enviar convite para o paciente criar acesso ao app.
+        A não aceitação do convite:
+            Não altera o status do paciente na clínica.
+            Não bloqueia agendamentos ou registros clínicos.
+
+
+
+Antes de cadastrar um paciente deve ser verificado se o paciente eh um usuario ja esta cadastrado no app e se ela ja eh paciente na clinica atraves do CPF
+se ja for usuario e n for paciente apenas faca o vinculo
+se for usuario e ja for paciente apenas mostre uma mensagem que ele ja eh paciente
+se nao for usuario e nem paciente cadastre o paciete e o envie o convite se clinica optar por enviar
+
+Vamos primeiro decidir a estrutura de dados.

@@ -14,7 +14,9 @@ import { StaffProfileModule } from './staff-profile/staff-profile.module';
 import { PsychologistProfileModule } from './psychologist-profile/psychologist-profile.module';
 import { MailModule } from './mail/mail.module';
 import { VerificationCodeModule } from './verification-code/verification-code.module';
-import { ClinicResponsibleTechnicianModule } from './clinic-responsible-technician/clinic-responsible-technician.module';
+import { CommandsModule } from './commands/commands.module';
+import { SessionModule } from './session/session.module';
+import { ActivityLogModule } from './activity-log/activity-log.module';
 
 @Module({
   imports: [
@@ -38,9 +40,12 @@ import { ClinicResponsibleTechnicianModule } from './clinic-responsible-technici
     PsychologistProfileModule,
     MailModule,
     VerificationCodeModule,
-    ClinicResponsibleTechnicianModule,
+    CommandsModule,
+    SessionModule,
+    ActivityLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule { }
+

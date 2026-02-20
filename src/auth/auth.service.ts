@@ -46,15 +46,14 @@ export class AuthService {
 
             await manager.save(user);
 
-            const payload = { sub: user.id };
-            const access_token = this.jwtService.sign(payload);
+            const onboarding_token = this.generateAccessToken(user.id, 'onboarding');
             const { code } = await this.verificationCodeService.generateEmailVerificationCode(user.id);
 
             this.mailService.sendVerificationEmail(user.email, user.name, code)
 
             return {
                 user,
-                access_token,
+                onboarding_token,
             };
         });
     }
@@ -68,17 +67,23 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
+        // if (user.status === USER_STATUS_ENUM.INVITE_PENDING) {
+        //     throw new UnauthorizedException('Invalid credentials');
+        // }
+
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const access_token = this.generateAccessToken(user.id);
+        const isUserActive = user.status === USER_STATUS_ENUM.ACTIVE;
+        const tokenType = isUserActive ? 'access' : 'onboarding';
+        const token = this.generateAccessToken(user.id, tokenType);
 
-        if (user.status === USER_STATUS_ENUM.PENDING_EMAIL_VERIFICATION) {
+        if (!isUserActive) {
             return {
                 user: user,
-                access_token,
+                onboarding_token: token,
             };
         }
 
@@ -86,33 +91,24 @@ export class AuthService {
         const userClinic = user.currentUserClinic ?? null;
         const currentClinic = userClinic?.clinic ?? null;
 
-        let userProfiles = userClinic != null ? {
-            staff: userClinic?.staffProfile?.status === PROFILE_STATUS_ENUM.ACTIVE ? {
-                role: userClinic.staffProfile.role,
-            } : null,
+        let userProfiles = {
+            staff: userClinic?.staffProfile ?? null,
 
-            patient: userClinic?.patientProfile.status === PROFILE_STATUS_ENUM.ACTIVE ? {
-                // notes: userClinic.patientProfile.notes ?? null,
-            } : null,
+            patient: userClinic?.patientProfile ?? null,
 
-            psychologist: user?.psychologistProfile?.status === PROFILE_STATUS_ENUM.ACTIVE ? {
-                crp: user.psychologistProfile.crp,
-                // specialty: user.psychologistProfile.specialty ?? null,
-            } : null,
-        } : null;
-
-        const userResponse = {
-            ...user,
-            profiles: userProfiles
+            psychologist: user?.psychologistProfile ?? null,
         };
+
+        (user as any).profiles = userProfiles;
 
         return {
-            user: userResponse,
+            user: user,
             current_clinic: currentClinic,
             clinics,
-            access_token,
+            access_token: token,
         };
     }
+
 
     async resendVerificationCode(userId: string) {
         const user = await this.usersService.findById(userId)
@@ -141,18 +137,34 @@ export class AuthService {
     async verifyUserEmail(userId: string, code: string) {
         await this.verificationCodeService.verifyUserEmail(userId, code);
 
-        const user = await this.usersService.findById(userId)
+        const user = await this.usersService.findById(userId);
 
         if (!user) {
-            throw new NotFoundException('Usuário não encontrado')
+            throw new NotFoundException('Usuário não encontrado');
         }
 
-        await this.usersService.updateStatus(user.id, USER_STATUS_ENUM.PENDING_REGISTRATION);
+        await this.usersService.updateStatus(user.id, USER_STATUS_ENUM.EMAIL_VERIFIED);
+
+        await this.usersService.tryActivateUser(user.id);
+
+        const updatedUser = await this.usersService.findByEmail(user.email);
+
+        if (!updatedUser) {
+            throw new Error('User not found after verification');
+        }
+
+        const tokenType = updatedUser.status === USER_STATUS_ENUM.ACTIVE ? 'access' : 'onboarding';
+        const token = this.generateAccessToken(user.id, tokenType);
+
+        return {
+            user: updatedUser,
+            [tokenType === 'access' ? 'access_token' : 'onboarding_token']: token,
+        };
     }
 
 
-    private generateAccessToken(user_id: User['id']): string {
-        const payload = { sub: user_id };
+    public generateAccessToken(id: string, type: 'onboarding' | 'access'): string {
+        const payload = { sub: id, type };
         return this.jwtService.sign(payload);
     }
 }

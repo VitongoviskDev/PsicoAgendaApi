@@ -1,20 +1,20 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { CLINIC_STATUS_ENUM, type ClinicStatus } from '@/clinics/entity/clinic.entity';
+import { Transform } from 'class-transformer';
+import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class RegisterClinicDto {
     @IsString()
     @IsNotEmpty()
     name: string;
 
-    @IsOptional()
     @IsString()
-    address?: string;
+    description: string;
 
-    @IsOptional()
     @IsString()
-    phone?: string;
-
     @IsOptional()
-    @IsEnum(CLINIC_STATUS_ENUM)
-    status?: ClinicStatus;
+    crp?: string;
+
+    @Transform(({ value }) => new Date(value))
+    @IsDate()
+    openedAt: Date;
 }
+

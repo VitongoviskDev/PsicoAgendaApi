@@ -112,10 +112,10 @@ export class VerificationCodeService {
         };
     }
 
-    async verifyUserEmail(user_id: User['id'], code: string) {
+    async verifyUserEmail(id: User['id'], code: string) {
         const record = await this.verificationCodeRepo.findOne({
             where: {
-                userId: user_id,
+                userId: id,
                 type: VERIFICATION_CODE_TYPE_ENUM.EMAIL,
                 status: VERIFICATION_CODE_STATUS.ACTIVE,
             },
